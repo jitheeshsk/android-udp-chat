@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">UDPChat</string>
+
+    <!-- Chat -->
+    <string name="profile_pic">Profile picture</string>
+    <string name="start_conversation">Start conversation</string>
+
+    <!-- Account -->
+    <string name="create_account">Create account</string>
+    <string name="ip_address">IP address</string>
+    <string name="user_name">Username</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="create">Create</string>
+
+    <!-- Message -->
+    <string name="send">Send</string>
+
+    <!-- Dummy -->
+    <string name="dummy_text">Dummy</string>
+
+
+</resources>
