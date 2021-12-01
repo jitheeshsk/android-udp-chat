@@ -1,15 +1,15 @@
 package com.hiskysat.udpchat.data;
 
-public class Account {
-    private final String ipAddress;
-    private final int port;
-    private final String name;
-    private final String password;
+import lombok.Builder;
+import lombok.Data;
 
-    public Account(String ipAddress, int port, String name, String password) {
-        this.ipAddress = ipAddress;
-        this.port = port;
-        this.name = name;
-        this.password = password;
-    }
+@Data
+@Builder
+public class Account {
+    private String ipAddress;
+    private int port;
+    private String name;
+    private String password;
+    private String confirmPassword;
+
 }

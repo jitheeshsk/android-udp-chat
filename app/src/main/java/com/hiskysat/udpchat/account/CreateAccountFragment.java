@@ -8,13 +8,16 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.hiskysat.udpchat.ViewModelFactory;
 import com.hiskysat.udpchat.databinding.FragmentCreateAccountBinding;
 
 public class CreateAccountFragment extends Fragment {
 
     private FragmentCreateAccountBinding binding;
+    private CreateAccountViewModel viewModel;
 
     @Nullable
     @Override
@@ -26,7 +29,25 @@ public class CreateAccountFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        CreateAccountViewModel form = new ViewModelProvider(requireActivity()).get(CreateAccountViewModel.class);
-        binding.setForm(form);
+        FragmentActivity activity = requireActivity();
+        viewModel = new ViewModelProvider(activity, ViewModelFactory.getInstance(activity.getApplication())).get(CreateAccountViewModel.class);
+        binding.setViewmodel(viewModel);
+        binding.setLifecycleOwner(activity);
+        viewModel.getIsCreateAccountFormValidMediator().observe(activity, aBoolean -> {
+            binding.executePendingBindings();
+        });
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        viewModel.start();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        viewModel.stop();
     }
 }

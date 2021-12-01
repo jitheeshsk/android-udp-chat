@@ -4,6 +4,8 @@
     <!-- Chat -->
     <string name="profile_pic">Profile picture</string>
     <string name="start_conversation">Start conversation</string>
+    <string name="no_chats">You have no conversations!</string>
+    <string name="no_chats_add">Start a conversation</string>
 
     <!-- Account -->
     <string name="create_account">Create account</string>
@@ -13,7 +15,15 @@
     <string name="confirm_password">Confirm password</string>
     <string name="create">Create</string>
 
+    <string name="msg_user_name_required">Username is required</string>
+    <string name="msg_user_name_length">Username should contain minimum 5 characters</string>
+
+    <string name="msg_password_required">Password is required</string>
+    <string name="msg_password_length">Password should contain minimum 8 characters</string>
+    <string name="msg_password_mismatch">Password does not match</string>
+
     <!-- Message -->
+    <string name="no_messages">You have no messages!</string>
     <string name="send">Send</string>
 
     <!-- Dummy -->
