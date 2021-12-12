@@ -7,20 +7,37 @@ import android.widget.BaseAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.databinding.DataBindingUtil;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hiskysat.udpchat.data.Message;
 import com.hiskysat.udpchat.databinding.RowMessageBinding;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
+public class MessageAdapter extends ListAdapter<Message, MessageAdapter.ViewHolder> {
 
-    private List<Message> messages;
     private final MessageViewModel messageViewModel;
 
-    public MessageAdapter(List<Message> messages, MessageViewModel messageViewModel) {
-        this.messages = messages;
+    private static final DiffUtil.ItemCallback<Message> DIFF_CALLBACK = new DiffUtil.ItemCallback<Message>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Message oldItem, @NonNull Message newItem) {
+            return oldItem.getId().equals(newItem.getId());
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull Message oldItem, @NonNull Message newItem) {
+            return Objects.equals(oldItem.getMessage(), newItem.getMessage())
+                    && Objects.equals(oldItem.isOwnMessage(), newItem.isOwnMessage())
+                    && Objects.equals(oldItem.getDateTime(), newItem.getDateTime());
+        }
+    };
+
+    public MessageAdapter(MessageViewModel messageViewModel) {
+        super(DIFF_CALLBACK);
         this.messageViewModel = messageViewModel;
     }
 
@@ -38,23 +55,11 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(messages.get(position));
+        holder.bind(getItem(position));
     }
-
-    @Override
-    public long getItemId(int i) {
-        return messages.get(i).getId();
-    }
-
-    @Override
-    public int getItemCount() {
-        return messages != null ? messages.size() : 0;
-    }
-
 
     private void setList(List<Message> messages) {
-        this.messages = messages;
-        notifyItemRangeChanged(0, messages.size());
+        submitList(messages);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

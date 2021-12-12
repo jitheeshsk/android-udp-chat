@@ -8,13 +8,15 @@
             name="listener"
             type="com.hiskysat.udpchat.chats.RowChatUserActionsListener" />
         <variable
-            name="chat"
+            name="chatRoom"
             type="com.hiskysat.udpchat.data.Chat" />
     </data>
     
     <androidx.constraintlayout.widget.ConstraintLayout 
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:onClick="@{() -> listener.onChatClicked(chatRoom)}">
     
         <ImageView
             android:id="@+id/img_profile_pic"
@@ -40,7 +42,7 @@
             app:layout_constraintTop_toTopOf="@+id/img_profile_pic"
             tools:text="Username (xxx.xxx.xxx)"
             android:singleLine="true"
-            android:text="@{chat.title}"/>
+            android:text="@{chatRoom.title}"/>
     
         <TextView
             android:id="@+id/lbl_time"
@@ -50,7 +52,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/img_profile_pic"
             tools:text="00:00 a.m"
-            android:text="@{chat.dateTime}"/>
+            android:text="@{chatRoom.dateTime}"/>
     
         <TextView
             android:id="@+id/lbl_last_message"
@@ -65,7 +67,7 @@
             app:layout_constraintStart_toEndOf="@+id/img_profile_pic"
             app:layout_constraintTop_toBottomOf="@+id/lbl_username"
             tools:text="Last message is this!!!!Last message is this!!!!Last message is this!!!!Last message is this!!!!Last message is this!!!!"
-            android:text="@{chat.message}"/>
+            android:text="@{chatRoom.message}"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

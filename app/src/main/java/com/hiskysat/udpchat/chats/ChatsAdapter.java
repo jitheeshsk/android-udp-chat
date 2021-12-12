@@ -5,18 +5,36 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LifecycleOwner;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.hiskysat.udpchat.data.Chat;
+import com.hiskysat.udpchat.data.Message;
 import com.hiskysat.udpchat.databinding.RowChatBinding;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> {
+public class ChatsAdapter extends ListAdapter<Chat, ChatsAdapter.ViewHolder> {
 
-    private List<Chat> chats;
     private final ChatsViewModel chatsViewModel;
-    private final LifecycleOwner lifecycleOwner;
+
+    private static final DiffUtil.ItemCallback<Chat> DIFF_CALLBACK = new DiffUtil.ItemCallback<Chat>() {
+        @Override
+        public boolean areItemsTheSame(@NonNull Chat oldItem, @NonNull Chat newItem) {
+            return oldItem.getId().equals(newItem.getId());
+        }
+
+        @Override
+        public boolean areContentsTheSame(@NonNull Chat oldItem, @NonNull Chat newItem) {
+            return Objects.equals(oldItem.getMessage(), newItem.getMessage())
+                    && Objects.equals(oldItem.getTitle(), newItem.getTitle())
+                    && Objects.equals(oldItem.getDateTime(), newItem.getDateTime());
+        }
+    };
+
 
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -28,17 +46,15 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
             this.binding = binding;
         }
 
-        public void bind(Chat chat, LifecycleOwner owner) {
-            this.binding.setChat(chat);
+        public void bind(Chat chat) {
+            this.binding.setChatRoom(chat);
             this.binding.executePendingBindings();
-            this.binding.setLifecycleOwner(owner);
         }
     }
 
-    public ChatsAdapter(List<Chat> chats, ChatsViewModel viewModel, LifecycleOwner activity) {
-        this.chats = chats;
+    public ChatsAdapter(ChatsViewModel viewModel) {
+        super(DIFF_CALLBACK);
         this.chatsViewModel = viewModel;
-        this.lifecycleOwner = activity;
     }
 
     @NonNull
@@ -61,26 +77,16 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        holder.bind(chats.get(position), lifecycleOwner);
+        holder.bind(getItem(position));
     }
 
-    @Override
-    public long getItemId(int position) {
-        return chats.get(position).getId();
-    }
-
-    @Override
-    public int getItemCount() {
-        return chats != null ? chats.size() : 0;
-    }
 
     public void replaceData(List<Chat> chats) {
         this.setList(chats);
     }
 
     private void setList(List<Chat> chats) {
-        this.chats = chats;
-        notifyItemRangeChanged(0, chats.size());
+        submitList(chats);
     }
 
 

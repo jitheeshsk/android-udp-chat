@@ -1,80 +1,66 @@
 package com.hiskysat.udpchat;
 
-import android.annotation.SuppressLint;
-import android.app.Application;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.hiskysat.AppDatabase;
-import com.hiskysat.adapters.AccountRoomAdapter;
 import com.hiskysat.ports.api.AccountServicePort;
 import com.hiskysat.ports.api.ChatServicePort;
+import com.hiskysat.ports.api.ClientServicePort;
 import com.hiskysat.ports.api.MessageServicePort;
-import com.hiskysat.repository.AccountsDao;
-import com.hiskysat.service.ChatService;
-import com.hiskysat.service.MessageService;
+import com.hiskysat.ports.spi.ChatInterfacePort;
 import com.hiskysat.udpchat.account.CreateAccountViewModel;
+import com.hiskysat.udpchat.addclient.AddClientViewModel;
 import com.hiskysat.udpchat.chats.ChatsViewModel;
+import com.hiskysat.udpchat.clients.ClientsViewModel;
 import com.hiskysat.udpchat.message.MessageViewModel;
-import com.hiskysat.service.AccountService;
+
+import javax.inject.Inject;
+
+import dagger.hilt.android.qualifiers.ApplicationContext;
 
 public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
 
-    @SuppressLint("StaticFieldLeak")
-    private static volatile ViewModelFactory INSTANCE;
-
-
-    private final Application application;
     private final MessageServicePort messageService;
     private final ChatServicePort chatService;
     private final AccountServicePort accountService;
+    private final ClientServicePort clientService;
+    private final ChatInterfacePort chatInterfacePort;
+    private final Context context;
 
-    public static ViewModelFactory getInstance(Application application) {
-
-        if (INSTANCE == null) {
-            synchronized (ViewModelFactory.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new ViewModelFactory(application,
-                            new MessageService(), new ChatService(), getAccountService(application));
-                }
-            }
-        }
-        return INSTANCE;
-    }
-
-    private static AccountService getAccountService(Context context) {
-        return new AccountService(new AccountRoomAdapter(context));
-    }
-
-    private ViewModelFactory(Application application, MessageServicePort messageService,
-                             ChatServicePort chatService, AccountServicePort accountService) {
-        this.application = application;
+    @Inject
+    public ViewModelFactory(@ApplicationContext Context context,
+                            MessageServicePort messageService, ChatInterfacePort chatInterfacePort,
+                            ChatServicePort chatService, AccountServicePort accountService,
+                            ClientServicePort clientService) {
+        this.context = context;
         this.messageService = messageService;
         this.chatService = chatService;
         this.accountService = accountService;
+        this.clientService = clientService;
+        this.chatInterfacePort = chatInterfacePort;
     }
 
-    @VisibleForTesting
-    public static void destroyInstance() {
-        INSTANCE = null;
-    }
 
     @SuppressWarnings("unchecked")
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
         if (modelClass.isAssignableFrom(MessageViewModel.class)) {
-            return (T) new MessageViewModel(application, messageService);
+            return (T) new MessageViewModel(chatService, messageService,
+                    context.getString(R.string.no_messages_first_message));
         } else if (modelClass.isAssignableFrom(ChatsViewModel.class)) {
-            return (T) new ChatsViewModel(application, chatService);
+            return (T) new ChatsViewModel(chatService);
         } else if (modelClass.isAssignableFrom(MainActivityViewModel.class)) {
-            return (T) new MainActivityViewModel(application, accountService);
+            return (T) new MainActivityViewModel(accountService);
         } else if (modelClass.isAssignableFrom(CreateAccountViewModel.class)) {
             return (T) new CreateAccountViewModel(accountService);
+        } else if (modelClass.isAssignableFrom(AddClientViewModel.class)) {
+            return (T) new AddClientViewModel(clientService);
+        } else if (modelClass.isAssignableFrom(ClientsViewModel.class)) {
+            return (T) new ClientsViewModel(clientService);
         }
         throw new IllegalArgumentException("Unknown model class given: " + modelClass.getName());
     }

@@ -12,6 +12,7 @@ public class MessageMapper {
         return Message.builder()
                 .id(messageDto.getId())
                 .message(messageDto.getMessage())
+                .ownMessage(messageDto.isOwnMessage())
                 .dateTime(FORMATTER.formatDate(messageDto.getDateTime()))
                 .build();
     }

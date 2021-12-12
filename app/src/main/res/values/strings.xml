@@ -6,17 +6,24 @@
     <string name="start_conversation">Start conversation</string>
     <string name="no_chats">You have no conversations!</string>
     <string name="no_chats_add">Start a conversation</string>
+    <string name="view_profile">View profile</string>
 
     <!-- Account -->
     <string name="create_account">Create account</string>
     <string name="ip_address">IP address</string>
+    <string name="port_number">Port</string>
+    <string name="ip_address_hint">xxx.xxx.xxx.xxx</string>
+    <string name="msg_ip_address_invalid">IP address is invalid</string>
+    <string name="msg_ip_address_required">IP address is required</string>
     <string name="user_name">Username</string>
     <string name="password">Password</string>
     <string name="confirm_password">Confirm password</string>
     <string name="create">Create</string>
+    <string name="ip_address_get_failed">Could not get IP address</string>
 
     <string name="msg_user_name_required">Username is required</string>
     <string name="msg_user_name_length">Username should contain minimum 5 characters</string>
+
 
     <string name="msg_password_required">Password is required</string>
     <string name="msg_password_length">Password should contain minimum 8 characters</string>
@@ -24,10 +31,33 @@
 
     <!-- Message -->
     <string name="no_messages">You have no messages!</string>
+    <string name="no_messages_add">Greet your friend with "Hello"</string>
+    <string name="no_messages_first_message">Hello</string>
     <string name="send">Send</string>
+
+    <!-- Clients List -->
+    <string name="clients">Contacts</string>
+    <string name="no_clients">You have no contacts added!</string>
+    <string name="no_clients_add">Add a new contact</string>
+
+    <!-- Add Client -->
+    <string name="msg_port_number_required">Port number is required</string>
+    <string name="msg_port_number_invalid">Port number is invalid</string>
+    <string name="msg_port_number_not_within_range">Port number should be between 1025 and 65525</string>
+    <string name="msg_add_client_success">Contact %s has been added successfully</string>
+    <string name="msg_add_client_failed">Cannot add contact right now, try again after sometime</string>
+    <string name="msg_add_client_ip_exists">Contact ip already exists</string>
+    <string name="add_client">Add contact</string>
 
     <!-- Dummy -->
     <string name="dummy_text">Dummy</string>
 
+    <!-- Notification -->
+    <string name="chat_service_channel_name">UDP Chat service</string>
+    <string name="chat_service_title">UDP Chat</string>
+    <string name="message_channel_name">Incoming messages</string>
+    <string name="chat_service_setup_in_progress">Chat service is setting up</string>
+    <string name="chat_service_setup_complete">Chat service running at ip: %s on port: %s</string>
+    <string name="msg_new_message_received">Received new message from ip: %s</string>
 
 </resources>

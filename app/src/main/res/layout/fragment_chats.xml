@@ -2,6 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
+        <import type="android.view.View" />
         <variable
             name="viewmodel"
             type="com.hiskysat.udpchat.chats.ChatsViewModel" />
@@ -30,7 +31,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.40"
-            app:placeholder="@{viewmodel.placeholder}" />
+            app:placeholder="@{viewmodel.placeholder}"
+            android:visibility="@{viewmodel.empty ? View.VISIBLE : View.GONE}"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/btn_create_message"

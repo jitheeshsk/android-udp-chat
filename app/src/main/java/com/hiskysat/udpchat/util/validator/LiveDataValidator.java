@@ -24,15 +24,25 @@ public class LiveDataValidator {
         return error;
     }
 
-    public boolean isValid() {
+    public boolean isValidWithoutEmitting() {
+        return getErrorIndex() == -1;
+    }
+
+    public int getErrorIndex() {
         for (int i = 0; i < validationRules.size(); i++) {
             if (validationRules.get(i).test(liveData.getValue())) {
-                emitErrorMessage(errorMessages.get(i));
-                return false;
+                return i;
             }
         }
-        emitErrorMessage(null);
-        return true;
+        return -1;
+    }
+
+
+    public boolean isValid() {
+        int errorIndex = getErrorIndex();
+        boolean isValid = errorIndex == -1;
+        emitErrorMessage(isValid ? null : errorMessages.get(errorIndex));
+        return isValid;
     }
 
     //For emitting error messages

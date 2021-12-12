@@ -10,10 +10,10 @@ import java.util.List;
 public class ChatsListBinding {
 
     @BindingAdapter("app:items")
-    public static void setItems(RecyclerView recyclerView, List<Chat> messages) {
+    public static void setItems(RecyclerView recyclerView, List<Chat> chats) {
         ChatsAdapter adapter = (ChatsAdapter) recyclerView.getAdapter();
-        if (adapter != null) {
-            adapter.replaceData(messages);
+        if (adapter != null && chats != null) {
+            adapter.replaceData(chats);
         }
     }
 }

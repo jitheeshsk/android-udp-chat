@@ -12,7 +12,7 @@ public class MessageListBindings {
     @BindingAdapter("app:items")
     public static void setItems(RecyclerView recyclerView, List<Message> messages) {
         MessageAdapter adapter = (MessageAdapter) recyclerView.getAdapter();
-        if (adapter != null) {
+        if (adapter != null && messages != null) {
             adapter.replaceData(messages);
         }
     }

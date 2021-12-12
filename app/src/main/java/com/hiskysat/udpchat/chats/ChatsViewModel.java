@@ -1,13 +1,9 @@
 package com.hiskysat.udpchat.chats;
 
-import android.app.Application;
-
 import androidx.databinding.ObservableBoolean;
-import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Transformations;
-import androidx.lifecycle.ViewModel;
 
 import com.hiskysat.data.ChatDto;
 import com.hiskysat.ports.api.ChatServicePort;
@@ -16,16 +12,28 @@ import com.hiskysat.udpchat.R;
 import com.hiskysat.udpchat.data.Chat;
 import com.hiskysat.udpchat.data.Placeholder;
 import com.hiskysat.udpchat.mapper.ChatMapper;
+import com.hiskysat.udpchat.util.rx.RxViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatsViewModel extends ViewModel {
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
+import io.reactivex.rxjava3.core.BackpressureStrategy;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.disposables.Disposable;
+import io.reactivex.rxjava3.schedulers.Schedulers;
+import io.reactivex.rxjava3.subjects.BehaviorSubject;
+import lombok.Builder;
+import lombok.Data;
+
+public class ChatsViewModel extends RxViewModel {
 
     private static final long NEW_ITEM_ID = -1;
 
     private final ChatServicePort chatServicePort;
-    private long userId;
+
+    private final BehaviorSubject<Long> userId = BehaviorSubject.create();
+    private final BehaviorSubject<Long> clientId = BehaviorSubject.create();
 
     private final MutableLiveData<Placeholder> placeholder = new MutableLiveData<>(Placeholder.builder()
             .iconResId(R.drawable.ic_add)
@@ -36,16 +44,25 @@ public class ChatsViewModel extends ViewModel {
             .build());
 
     private final MutableLiveData<List<Chat>> items = new MutableLiveData<>();
-    public final MutableLiveData<Boolean> dataLoading = new MutableLiveData<>();
-    public final LiveData<Boolean> empty = Transformations.map(items, (List::isEmpty));
-    public final ObservableBoolean isDataLoadingError = new ObservableBoolean();
+    private final MutableLiveData<Boolean> dataLoading = new MutableLiveData<>();
+    private final LiveData<Boolean> empty = Transformations.map(items, (List::isEmpty));
+    private final ObservableBoolean isDataLoadingError = new ObservableBoolean();
 
     private final MutableLiveData<Event<Long>> openMessageEvent = new MutableLiveData<>();
 
 
-    public ChatsViewModel(Application context, ChatServicePort chatServicePort) {
+    public ChatsViewModel(ChatServicePort chatServicePort) {
         this.chatServicePort = chatServicePort;
+        initObservables();
 
+    }
+
+    public LiveData<Boolean> getEmpty() {
+        return empty;
+    }
+
+    public MutableLiveData<Boolean> getDataLoading() {
+        return dataLoading;
     }
 
     public MutableLiveData<List<Chat>> getItems() {
@@ -61,38 +78,16 @@ public class ChatsViewModel extends ViewModel {
     }
 
     public void start(Long userId) {
-        this.userId = userId;
-        this.loadChats();
+        this.userId.onNext(userId);
     }
 
-    public void loadChats() {
-        loadChats(true);
+
+    public void openMessageForClient(long clientId) {
+        this.clientId.onNext(clientId);
     }
 
-    public void loadChats(boolean showLoadingUi) {
-        if (showLoadingUi) {
-            this.dataLoading.setValue(true);
-        }
-        this.chatServicePort.getChats(userId, new ChatServicePort.LoadChatsCallback() {
-            @Override
-            public void onChatsLoaded(List<ChatDto> chats) {
-
-                if (showLoadingUi) {
-                    dataLoading.setValue(false);
-                }
-
-                isDataLoadingError.set(false);
-
-                items.setValue(toChats(chats));
-            }
-
-            @Override
-            public void onDataNotAvailable() {
-                dataLoading.setValue(false);
-                isDataLoadingError.set(true);
-            }
-        });
-
+    public boolean isNewMessage(long id) {
+        return id == NEW_ITEM_ID;
     }
 
     public void openNewMessage() {
@@ -103,12 +98,67 @@ public class ChatsViewModel extends ViewModel {
         openMessageEvent.setValue(new Event<>(id));
     }
 
+
+    private void initObservables() {
+        Disposable userIdChange = userId
+                .distinctUntilChanged(Long::equals)
+                .toFlowable(BackpressureStrategy.BUFFER)
+                .switchMap(userId -> loadChats(userId, true))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(items::setValue);
+        addDisposable(userIdChange);
+
+        Disposable createChatSub = this.clientId
+                .distinctUntilChanged((previous, current) -> previous.equals(current) || current == NEW_ITEM_ID)
+                .observeOn(Schedulers.io())
+                .flatMapSingle(clientId -> this.chatServicePort.createChatIfNotExists(this.userId.getValue(),
+                        clientId))
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(chatDto -> {
+                    openMessage(chatDto.getId());
+                    clientId.onNext(NEW_ITEM_ID);
+                });
+
+        addDisposable(createChatSub);
+    }
+
+
+
+    private Flowable<List<Chat>> loadChats(long userId, boolean showLoadingUi) {
+        return this.chatServicePort.getChats(userId)
+                .map(this::toChats)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(subscription -> {
+                    isDataLoadingError.set(false);
+                    if (showLoadingUi) {
+                        dataLoading.setValue(true);
+                    }
+                })
+                .doAfterNext(subscription -> dataLoading.setValue(false))
+                .doOnError(error -> {
+                    dataLoading.setValue(false);
+                    isDataLoadingError.set(true);
+                });
+
+    }
+
     private List<Chat> toChats(List<ChatDto> chatDtos) {
         List<Chat> chats = new ArrayList<>();
         for (ChatDto chat: chatDtos) {
             chats.add(ChatMapper.chatFromChatDto(chat));
         }
         return chats;
+    }
+
+    @Builder
+    @Data
+    protected static class MessageEvent {
+        Long userId;
+        Long clientId;
+        Long chatId;
     }
 
 }

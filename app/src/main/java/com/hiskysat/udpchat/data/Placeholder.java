@@ -6,7 +6,6 @@ import androidx.annotation.StringRes;
 import lombok.Builder;
 import lombok.Data;
 
-@Data
 @Builder
 public class Placeholder {
     @DrawableRes
@@ -20,6 +19,53 @@ public class Placeholder {
     private boolean showButton;
     private OnButtonClickListener buttonClickListener;
 
+    public int getIconResId() {
+        return iconResId;
+    }
+
+    public void setIconResId(int iconResId) {
+        this.iconResId = iconResId;
+    }
+
+    public int getIconContentDescription() {
+        return iconContentDescription;
+    }
+
+    public void setIconContentDescription(int iconContentDescription) {
+        this.iconContentDescription = iconContentDescription;
+    }
+
+    public int getLabelResId() {
+        return labelResId;
+    }
+
+    public void setLabelResId(int labelResId) {
+        this.labelResId = labelResId;
+    }
+
+    public int getButtonLabelResId() {
+        return buttonLabelResId;
+    }
+
+    public void setButtonLabelResId(int buttonLabelResId) {
+        this.buttonLabelResId = buttonLabelResId;
+    }
+
+    public boolean isShowButton() {
+        return showButton;
+    }
+
+    public void setShowButton(boolean showButton) {
+        this.showButton = showButton;
+    }
+
+    public OnButtonClickListener getButtonClickListener() {
+        return buttonClickListener;
+    }
+
+    public void setButtonClickListener(OnButtonClickListener buttonClickListener) {
+        this.buttonClickListener = buttonClickListener;
+    }
 
     public interface OnButtonClickListener {
         void onButtonClicked();

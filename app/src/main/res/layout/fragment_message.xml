@@ -2,6 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
+        <import type="android.view.View"/>
         <import type="android.text.TextUtils"/>
         <variable
             name="viewmodel"
@@ -13,28 +14,56 @@
         android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/list_chat"
+            android:id="@+id/list_messages"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:items="@{viewmodel.items}"/>
+            app:items="@{viewmodel.items}"
+            android:paddingBottom="64dp"
+            android:clipToPadding="false"/>
 
-        <androidx.appcompat.widget.AppCompatEditText
-            android:id="@+id/input_message"
+        <include
+            layout="@layout/layout_empty_placeholder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.40"
+            app:placeholder="@{viewmodel.placeholder}"
+            android:visibility="@{viewmodel.empty ? View.VISIBLE : View.GONE }"/>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/input_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:maxLines="3"
-            android:minHeight="48dp"
-            android:onTextChanged="@{() -> viewmodel.onMessageChanged(inputMessage.getText().toString())}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/floatingActionButton"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:cardCornerRadius="24dp"
+            app:cardElevation="24dp">
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/input_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="3"
+                android:minHeight="48dp"
+                android:text="@={viewmodel.message}"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:background="@drawable/transparent" />
+
+        </androidx.cardview.widget.CardView>
+
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/floatingActionButton"

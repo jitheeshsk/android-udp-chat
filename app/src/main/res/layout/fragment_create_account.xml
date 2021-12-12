@@ -2,6 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
+        <import type="android.view.View" />
         <variable
             name="viewmodel"
             type="com.hiskysat.udpchat.account.CreateAccountViewModel"
@@ -32,7 +33,8 @@
             android:layout_marginTop="48dp"
             app:layout_constraintEnd_toStartOf="@+id/gl_end"
             app:layout_constraintStart_toStartOf="@+id/gl_start"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            app:error="@{viewmodel.ipAddressError != null ? context.getString(viewmodel.ipAddressError) : null}">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/input_ip_address"
@@ -44,6 +46,27 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/layout_port_number"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:error="@{viewmodel.portNumberValidator.error != null ? context.getString(viewmodel.portNumberValidator.error) : null}"
+            app:layout_constraintEnd_toStartOf="@+id/gl_end"
+            app:layout_constraintStart_toStartOf="@+id/gl_start"
+            app:layout_constraintTop_toBottomOf="@+id/layout_ip_address">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/input_port_number"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/port_number"
+                android:inputType="number"
+                android:text="@={viewmodel.portNumber}"
+                android:enabled="@{!viewmodel.isReadOnly}" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/layout_user_name"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -51,13 +74,14 @@
             app:error="@{viewmodel.userNameValidator.error != null ? context.getString(viewmodel.userNameValidator.error) : null}"
             app:layout_constraintEnd_toStartOf="@+id/gl_end"
             app:layout_constraintStart_toStartOf="@+id/gl_start"
-            app:layout_constraintTop_toBottomOf="@+id/layout_ip_address">
+            app:layout_constraintTop_toBottomOf="@+id/layout_port_number">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/user_name"
-                android:text="@={viewmodel.userName}" />
+                android:text="@={viewmodel.userName}"
+                android:enabled="@{!viewmodel.isReadOnly}"/>
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -68,14 +92,15 @@
             app:error="@{viewmodel.passwordValidator.error != null ? context.getString(viewmodel.passwordValidator.error) : null}"
             app:layout_constraintEnd_toStartOf="@+id/gl_end"
             app:layout_constraintStart_toStartOf="@+id/gl_start"
-            app:layout_constraintTop_toBottomOf="@+id/layout_user_name">
+            app:layout_constraintTop_toBottomOf="@+id/layout_user_name"
+            android:visibility="@{viewmodel.isReadOnly ? View.GONE : View.VISIBLE}">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/password"
                 android:inputType="textPassword"
-                android:text="@={viewmodel.password}"/>
+                android:text="@={viewmodel.password}" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
@@ -86,7 +111,8 @@
             app:error="@{viewmodel.confirmPasswordValidator.error != null ? context.getString(viewmodel.confirmPasswordValidator.error) : null}"
             app:layout_constraintEnd_toStartOf="@+id/gl_end"
             app:layout_constraintStart_toStartOf="@+id/gl_start"
-            app:layout_constraintTop_toBottomOf="@+id/layout_password">
+            app:layout_constraintTop_toBottomOf="@+id/layout_password"
+            android:visibility="@{viewmodel.isReadOnly ? View.GONE : View.VISIBLE}">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
@@ -106,7 +132,16 @@
             app:layout_constraintEnd_toStartOf="@+id/gl_end"
             app:layout_constraintStart_toStartOf="@+id/gl_start"
             app:layout_constraintTop_toBottomOf="@+id/layout_confirm_password"
-            android:onClick="@{()-> viewmodel.createUserAccount()}"/>
+            android:onClick="@{()-> viewmodel.createUserAccount()}"
+            android:visibility="@{viewmodel.isReadOnly ? View.GONE : View.VISIBLE}"/>
+
+        <androidx.constraintlayout.widget.Barrier
+            android:id="@+id/field_barrier"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:barrierDirection="bottom"
+            app:constraint_referenced_ids="layout_password, layout_confirm_password, btn_create_account"
+            app:layout_constraintTop_toBottomOf="@id/layout_user_name"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

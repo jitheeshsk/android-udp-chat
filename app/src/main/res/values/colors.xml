@@ -10,4 +10,7 @@
 
     <drawable name="touchFeedback">#CFD8DC</drawable>
 
+    <color name="color_ic_light">#777777</color>
+    <color name="transparent">#00000000</color>
+
 </resources>
