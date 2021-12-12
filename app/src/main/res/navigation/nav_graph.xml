@@ -7,5 +7,65 @@
     <fragment
         android:id="@+id/createAccountFragment"
         android:name="com.hiskysat.udpchat.account.CreateAccountFragment"
-        android:label="CreateAccountFragment" />
+        android:label="@string/create_account" >
+        <action
+            android:id="@+id/action_createAccountFragment_to_chatsFragment"
+            app:destination="@id/chatsFragment"
+            app:launchSingleTop="false"
+            app:popUpTo="@id/createAccountFragment"
+            app:popUpToInclusive="true" />
+        <argument
+            android:name="viewOnly"
+            app:argType="boolean"
+            android:defaultValue="false"/>
+    </fragment>
+    <fragment
+        android:id="@+id/messageFragment"
+        android:name="com.hiskysat.udpchat.message.MessageFragment"
+        android:label="" >
+        <argument
+            android:name="chatId"
+            app:argType="long"
+            android:defaultValue="-1L" />
+    </fragment>
+    <fragment
+        android:id="@+id/chatsFragment"
+        android:name="com.hiskysat.udpchat.chats.ChatsFragment"
+        android:label="@string/app_name" >
+        <action
+            android:id="@+id/action_chatsFragment_to_messageFragment"
+            app:destination="@id/messageFragment">
+        </action>
+        <action
+            android:id="@+id/action_chatsFragment_to_createAccountFragment"
+            app:destination="@id/createAccountFragment" >
+            <argument
+                android:name="viewOnly"
+                android:defaultValue="true" />
+        </action>
+        <action
+            android:id="@+id/action_chatsFragment_to_clientsFragment"
+            app:destination="@id/clientsFragment" />
+        <argument
+            android:name="userId"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+
+    </fragment>
+    <fragment
+        android:id="@+id/addClientFragment"
+        android:name="com.hiskysat.udpchat.addclient.AddClientFragment"
+        android:label="@string/add_client" />
+    <fragment
+        android:id="@+id/clientsFragment"
+        android:name="com.hiskysat.udpchat.clients.ClientsFragment"
+        android:label="@string/clients" >
+        <action
+            android:id="@+id/action_clientsFragment_to_addClientFragment"
+            app:destination="@id/addClientFragment" />
+        <argument
+            android:name="userId"
+            app:argType="long"
+            android:defaultValue="-1L"/>
+    </fragment>
 </navigation>
